@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.rickandmortyhd.rick_and_morty">
    <application
-        android:label="rick_and_morty"
+        android:label="Rick and Morty App"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
