@@ -39,8 +39,20 @@ ThemeData lightTheme = ThemeData(
     elevation: 1,
     shadowColor: lightColorScheme.shadow,
   ),
+  
   scaffoldBackgroundColor: lightColorScheme.background,
-  cardColor: lightColorScheme.surface,
+  
+  cardTheme: CardTheme(
+    color: lightColorScheme.surface,
+    elevation: 1,
+    shadowColor: lightColorScheme.shadow,
+  ),
+  inputDecorationTheme: InputDecorationTheme(
+    fillColor: lightColorScheme.surface,
+    iconColor: lightColorScheme.primary,
+    filled: true,
+    
+  ),
   
 );
 
@@ -54,6 +66,15 @@ ThemeData darkTheme = ThemeData(
     shadowColor: lightColorScheme.shadow,
   ),
   scaffoldBackgroundColor: darkColorScheme.background,
-  cardColor: darkColorScheme.surface,
-
+  cardTheme: CardTheme(
+    color: darkColorScheme.surface,
+    elevation: 1,
+    shadowColor: lightColorScheme.shadow,
+  ),
+  inputDecorationTheme: InputDecorationTheme(
+    fillColor: darkColorScheme.surface,
+    iconColor: darkColorScheme.primary,
+    filled: true,
+  ),
+  
 );

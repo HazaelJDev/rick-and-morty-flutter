@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:rick_and_morty/widgets/input_search.dart';
+import 'package:rick_and_morty/widgets/item_list.dart';
 import '../blocs/theme_bloc.dart';
 import '../utils/theme.dart';
+import '../utils/fakeData.dart';
 
 class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Provider.of<ThemeBloc>(context);
+    final themeScheme = Theme.of(context).colorScheme;
     return Scaffold(
         appBar: AppBar(
           leading: IconButton(
             onPressed: () => openAbout(context),
-            icon: Icon(Icons.info_outline,
-                color: Theme.of(context).colorScheme.onBackground),
+            icon: Icon(Icons.info_outline, color: themeScheme.onBackground),
             tooltip: "About this app",
           ),
           title: const Text('Rick and Morty App'),
@@ -20,15 +23,42 @@ class Home extends StatelessWidget {
             IconButton(
               onPressed: () => changeTheme(theme),
               icon:
-                  Icon(theme.getIsDark() ? Icons.dark_mode : Icons.light_mode),
+                  Icon(theme.getIsDark() ? Icons.light_mode : Icons.dark_mode),
               tooltip: "Change theme",
             ),
           ],
         ),
-        body: const Center(
-          child: Text("Hola mundo"),
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Container(
+              padding: const EdgeInsets.only(
+                top: 28,
+                right: 16,
+                bottom: 32,
+                left: 16,
+              ),
+              child: InputSearch("Search for a character"),
+            ),
+            Expanded(
+              child: ListView.builder(
+                padding: const EdgeInsets.only(
+                  top: 0,
+                  right: 16,
+                  bottom: 32,
+                  left: 16,
+                ),
+                itemCount: fakeData.length,
+                itemBuilder: (context, index) => Item(fakeData[index]),
+              ),
+            ),
+          ],
         ));
-  }  
+  }
+
+  searchCharacter() {}
+
+  openCharacter(BuildContext context) {}
 
   openAbout(context) {
     return showDialog(
@@ -41,7 +71,7 @@ class Home extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: const <Widget>[
               Text(
-              'This is a simple app that shows the characters from the Rick and Morty TV show.'),
+                  'This is a simple app that shows the characters from the Rick and Morty TV show.'),
               Text('by: '),
               Image(
                 image: AssetImage("assets/image/logo2.png"),
@@ -68,4 +98,3 @@ class Home extends StatelessWidget {
     }
   }
 }
-
