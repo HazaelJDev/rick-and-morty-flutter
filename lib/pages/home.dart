@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rick_and_morty/widgets/input_search.dart';
 import 'package:rick_and_morty/widgets/item_list.dart';
+import 'package:rick_and_morty/widgets/offline_status.dart';
 import '../blocs/theme_bloc.dart';
+import '../blocs/connectivity_bloc.dart';
 import '../utils/theme.dart';
 import '../utils/fakeData.dart';
 
@@ -10,6 +12,9 @@ class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Provider.of<ThemeBloc>(context);
+    //Check internet Conncetiovty
+    //final status = Provider.of<ConnectivityBloc>(context);
+
     final themeScheme = Theme.of(context).colorScheme;
     return Scaffold(
         appBar: AppBar(
@@ -31,6 +36,7 @@ class Home extends StatelessWidget {
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
+            const OfflineBottomBar(),
             Container(
               padding: const EdgeInsets.only(
                 top: 28,

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:provider/provider.dart';
+import '../blocs/connectivity_bloc.dart';
 import './home.dart';
 
- 
+
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -15,13 +18,12 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
 
-    Future.delayed(const Duration(seconds: 4),
-      () => Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => Home()),
-      )
-      );
-          
+    Future.delayed(
+        const Duration(seconds: 4),
+        () => Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => Home()),
+            ));
   }
 
   @override
@@ -40,8 +42,7 @@ class _SplashScreenState extends State<SplashScreen> {
               SizedBox(
                 height: 28,
               ),
-              SpinKitChasingDots
-              (
+              SpinKitChasingDots(
                 color: Color(0xFFF9F9F9),
                 size: 50.0,
                 duration: Duration(milliseconds: 800),
