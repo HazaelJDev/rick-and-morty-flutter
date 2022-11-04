@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rick_and_morty/blocs/theme_bloc.dart';
+import '../blocs/connectivity_bloc.dart';
+import '../models/character_model.dart';
 
 class Item extends StatelessWidget {
-  dynamic _data;
+  final dynamic _data;
 
   static List<Color> alive = [Color(0xFF7AD123), Color(0xFFC1F178)];
 
@@ -12,20 +14,27 @@ class Item extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Provider.of<ThemeBloc>(context);
+    final network = Provider.of<ConnectivityBloc>(context);
+
     return Card(
       child: ListTile(
         onTap: () => openDetail(context, _data),
-        leading: Image.network(_data['image'], width: 56),
-        title: Text(_data["name"]),
+        leading: network.status == NetworkStatus.offline
+            ? const Image(
+                image: AssetImage("assets/image/offline.jpg"),
+                width: 56,
+              )
+            : Image.network(_data.image, width: 56),
+        title: Text(_data.name),
         subtitle: Row(
           children: [
-            Text(_data["status"],
+            Text(_data.status,
                 style: TextStyle(
-                    color: _data["status"] == "Alive"
+                    color: _data.status == "Alive"
                         ? alive[theme.getIsDark() ? 0 : 1]
                         : Theme.of(context).colorScheme.error)),
             const Text(" - "),
-            Text(_data["species"]),
+            Text(_data.species),
           ],
         ),
         trailing: Icon(Icons.arrow_right,
@@ -36,12 +45,11 @@ class Item extends StatelessWidget {
 }
 
 openDetail(context, _data) {
-  
   Widget makeDismissible({required Widget child}) => GestureDetector(
-    behavior: HitTestBehavior.opaque,
-    onTap: () => Navigator.of(context).pop(),
-    child: GestureDetector(onTap: () {}, child: child),
-  );
+        behavior: HitTestBehavior.opaque,
+        onTap: () => Navigator.of(context).pop(),
+        child: GestureDetector(onTap: () {}, child: child),
+      );
 
   final theme = Provider.of<ThemeBloc>(context, listen: false);
   return showModalBottomSheet(
@@ -63,34 +71,35 @@ openDetail(context, _data) {
               child: ListView(
                 controller: scrollController,
                 children: <Widget>[
-                  Image.network(_data['image'], width: 280),
-                  Text(_data["name"],
+                  Image.network(_data.image, width: 280),
+                  Text(_data.name,
                       style: Theme.of(context).textTheme.titleLarge),
-                  Text(_data["status"],
+                  Text(_data.status,
                       style: TextStyle(
-                          color: _data["status"] == "Alive"
+                          color: _data.status == "Alive"
                               ? Item.alive[theme.getIsDark() ? 0 : 1]
                               : Theme.of(context).colorScheme.error)),
                   Row(
                     children: [
                       LabelLarge(
                           "Species: ", Theme.of(context).colorScheme.primary),
-                      LabelLarge(_data["species"],
+                      LabelLarge(_data.species,
                           Theme.of(context).colorScheme.onSurface),
                     ],
                   ),
                   Row(
                     children: [
-                      LabelLarge("Type: ", Theme.of(context).colorScheme.primary),
                       LabelLarge(
-                          _data["type"], Theme.of(context).colorScheme.onSurface),
+                          "Type: ", Theme.of(context).colorScheme.primary),
+                      LabelLarge(_data.type,
+                          Theme.of(context).colorScheme.onSurface),
                     ],
                   ),
                   Row(
                     children: [
                       LabelLarge(
                           "Gender: ", Theme.of(context).colorScheme.primary),
-                      LabelLarge(_data["gender"],
+                      LabelLarge(_data.gender,
                           Theme.of(context).colorScheme.onSurface),
                     ],
                   ),
@@ -98,7 +107,7 @@ openDetail(context, _data) {
                     children: [
                       LabelLarge(
                           "Origin: ", Theme.of(context).colorScheme.primary),
-                      LabelLarge(_data["origin"]["name"],
+                      LabelLarge(_data.origin.name,
                           Theme.of(context).colorScheme.onSurface),
                     ],
                   ),
@@ -106,7 +115,7 @@ openDetail(context, _data) {
                     children: [
                       LabelLarge(
                           "Location: ", Theme.of(context).colorScheme.primary),
-                      LabelLarge(_data["location"]["name"],
+                      LabelLarge(_data.location.name,
                           Theme.of(context).colorScheme.onSurface),
                     ],
                   ),
@@ -114,7 +123,7 @@ openDetail(context, _data) {
                     children: [
                       LabelLarge(
                           "Episodes: ", Theme.of(context).colorScheme.primary),
-                      for (var episode in _data["episode"])
+                      for (var episode in _data.episode)
                         LabelLarge("Episodio $episode",
                             Theme.of(context).colorScheme.onSurface),
                     ],
@@ -126,8 +135,6 @@ openDetail(context, _data) {
         );
       });
 }
-
-
 
 class LabelLarge extends StatelessWidget {
   String text;

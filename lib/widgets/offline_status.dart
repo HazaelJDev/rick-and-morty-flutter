@@ -9,9 +9,9 @@ class OfflineBottomBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final status = Provider.of<ConnectivityBloc>(context);
+    final network = Provider.of<ConnectivityBloc>(context);
     return Visibility(
-      visible: status.status == NetworkStatus.offline,
+      visible: network.status == NetworkStatus.offline,
       child: Container(
         padding: const EdgeInsets.all(16),
         height: 60,

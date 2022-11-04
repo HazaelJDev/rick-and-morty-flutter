@@ -3,10 +3,11 @@ import 'package:provider/provider.dart';
 import 'package:rick_and_morty/widgets/input_search.dart';
 import 'package:rick_and_morty/widgets/item_list.dart';
 import 'package:rick_and_morty/widgets/offline_status.dart';
-import '../blocs/theme_bloc.dart';
-import '../blocs/connectivity_bloc.dart';
 import '../utils/theme.dart';
-import '../utils/fakeData.dart';
+import '../blocs/theme_bloc.dart';
+import '../models/character_model.dart';
+import '../services/character_service.dart';
+//import '../utils/fakeData.dart';
 
 class Home extends StatelessWidget {
   @override
@@ -47,15 +48,29 @@ class Home extends StatelessWidget {
               child: InputSearch("Search for a character"),
             ),
             Expanded(
-              child: ListView.builder(
-                padding: const EdgeInsets.only(
-                  top: 0,
-                  right: 16,
-                  bottom: 32,
-                  left: 16,
-                ),
-                itemCount: fakeData.length,
-                itemBuilder: (context, index) => Item(fakeData[index]),
+              child: FutureBuilder<List<Character>>(
+                future: CharacterService.getCharacters(),
+                builder: (context, snapshot){
+                  if(!snapshot.hasData){
+                    return const Center(child: Text("Cargando los datos..."));
+                  }
+
+                  final List<Character> characters = snapshot.data!;
+                  
+                  //print("Character: ${characters}");
+                  
+
+                  return ListView.builder(
+                    padding: const EdgeInsets.only(
+                      top: 0,
+                      right: 16,
+                      bottom: 32,
+                      left: 16,
+                    ),
+                    itemCount: characters.length,
+                    itemBuilder: (context, index) => Item(characters[index]),
+                  );
+                }
               ),
             ),
           ],
