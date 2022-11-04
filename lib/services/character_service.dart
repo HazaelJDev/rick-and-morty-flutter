@@ -31,11 +31,24 @@ class CharacterService {
   );
   
   static Future<List<Character>> getCharacters() async {
-    final response = await http.get(_url1);
-    if (response.statusCode == 200) {
-      final json = jsonDecode(response.body);
-      final results = json['results'];
-      return results.map<Character>((json) => Character.fromJson(json)).toList();
+    final response1 = await http.get(_url1);
+    final response2 = await http.get(_url2);
+    final response3 = await http.get(_url3);
+    
+    if (response1.statusCode == 200 && response2.statusCode == 200 && response3.statusCode == 200) {
+      final json1 = jsonDecode(response1.body);
+      final json2 = jsonDecode(response2.body);
+      final json3 = jsonDecode(response3.body);
+      
+      final results1 = json1['results'];
+      final results2 = json2['results'];
+      final results3 = json3['results'];
+
+
+      final res1 = results1.map<Character>((json) => Character.fromJson(json)).toList();
+      final res2 = results2.map<Character>((json) => Character.fromJson(json)).toList();
+      final res3 = results3.map<Character>((json) => Character.fromJson(json)).toList();
+      return [...res1,...res2,...res3];
     } else {
       throw Exception('Failed to load characters');
     }

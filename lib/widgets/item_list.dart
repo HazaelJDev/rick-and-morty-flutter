@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rick_and_morty/blocs/theme_bloc.dart';
 import '../blocs/connectivity_bloc.dart';
-import '../models/character_model.dart';
+//import '../models/character_model.dart';
 
 class Item extends StatelessWidget {
   final dynamic _data;
@@ -34,7 +34,7 @@ class Item extends StatelessWidget {
                         ? alive[theme.getIsDark() ? 0 : 1]
                         : Theme.of(context).colorScheme.error)),
             const Text(" - "),
-            Text(_data.species),
+            Expanded(child: Text(_data.species, overflow: TextOverflow.fade,softWrap: false,)),
           ],
         ),
         trailing: Icon(Icons.arrow_right,
@@ -120,12 +120,22 @@ openDetail(context, _data) {
                     ],
                   ),
                   Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       LabelLarge(
                           "Episodes: ", Theme.of(context).colorScheme.primary),
                       for (var episode in _data.episode)
-                        LabelLarge("Episodio $episode",
-                            Theme.of(context).colorScheme.onSurface),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          //crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Icon(Icons.movie_filter,
+                                color: Theme.of(context).colorScheme.primary),
+                            SizedBox(width: 16,),
+                            LabelLarge("Episode ${episode.split("/").last}",
+                                Theme.of(context).colorScheme.onSurface),
+                          ],
+                        ),
                     ],
                   ),
                 ],
