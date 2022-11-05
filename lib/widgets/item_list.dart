@@ -34,7 +34,12 @@ class Item extends StatelessWidget {
                         ? alive[theme.getIsDark() ? 0 : 1]
                         : Theme.of(context).colorScheme.error)),
             const Text(" - "),
-            Expanded(child: Text(_data.species, overflow: TextOverflow.fade,softWrap: false,)),
+            Expanded(
+                child: Text(
+              _data.species,
+              overflow: TextOverflow.fade,
+              softWrap: false,
+            )),
           ],
         ),
         trailing: Icon(Icons.arrow_right,
@@ -52,6 +57,7 @@ openDetail(context, _data) {
       );
 
   final theme = Provider.of<ThemeBloc>(context, listen: false);
+  final network = Provider.of<ConnectivityBloc>(context, listen: false);
   return showModalBottomSheet(
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
@@ -71,7 +77,13 @@ openDetail(context, _data) {
               child: ListView(
                 controller: scrollController,
                 children: <Widget>[
-                  Image.network(_data.image, width: 280),
+                  network.status == NetworkStatus.offline
+                      ? const Image(
+                          image: AssetImage("assets/image/offline.jpg"),
+                          width: 280,
+                        )
+                      : Image.network(_data.image, width: 280),
+                  const SizedBox(height: 16,),
                   Text(_data.name,
                       style: Theme.of(context).textTheme.titleLarge),
                   Text(_data.status,
@@ -79,6 +91,7 @@ openDetail(context, _data) {
                           color: _data.status == "Alive"
                               ? Item.alive[theme.getIsDark() ? 0 : 1]
                               : Theme.of(context).colorScheme.error)),
+                  const SizedBox(height: 12,),
                   Row(
                     children: [
                       LabelLarge(
@@ -87,14 +100,16 @@ openDetail(context, _data) {
                           Theme.of(context).colorScheme.onSurface),
                     ],
                   ),
+                  const SizedBox(height: 12,),
                   Row(
                     children: [
                       LabelLarge(
                           "Type: ", Theme.of(context).colorScheme.primary),
-                      LabelLarge(_data.type,
-                          Theme.of(context).colorScheme.onSurface),
+                      LabelLarge(
+                          _data.type, Theme.of(context).colorScheme.onSurface),
                     ],
                   ),
+                  const SizedBox(height: 12,),
                   Row(
                     children: [
                       LabelLarge(
@@ -103,6 +118,7 @@ openDetail(context, _data) {
                           Theme.of(context).colorScheme.onSurface),
                     ],
                   ),
+                  const SizedBox(height: 12,),
                   Row(
                     children: [
                       LabelLarge(
@@ -111,6 +127,7 @@ openDetail(context, _data) {
                           Theme.of(context).colorScheme.onSurface),
                     ],
                   ),
+                  const SizedBox(height: 12,),
                   Row(
                     children: [
                       LabelLarge(
@@ -119,6 +136,7 @@ openDetail(context, _data) {
                           Theme.of(context).colorScheme.onSurface),
                     ],
                   ),
+                  const SizedBox(height: 12,),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -131,7 +149,9 @@ openDetail(context, _data) {
                           children: [
                             Icon(Icons.movie_filter,
                                 color: Theme.of(context).colorScheme.primary),
-                            SizedBox(width: 16,),
+                            SizedBox(
+                              width: 16,
+                            ),
                             LabelLarge("Episode ${episode.split("/").last}",
                                 Theme.of(context).colorScheme.onSurface),
                           ],

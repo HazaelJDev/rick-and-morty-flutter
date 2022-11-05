@@ -4,6 +4,19 @@ import '../models/character_model.dart';
 
 
 class CharacterService {
+  /*static CharacterService? _instance;
+
+  CharacterService._();
+
+  static CharacterService? get instance {
+    if (_instance == null) {
+      _instance = CharacterService._();
+    }
+    return _instance;
+  }*/
+  
+  
+  
   static const _scheme = 'https';
   static const _host = 'rickandmortyapi.com';
   static const _path = '/api/character';

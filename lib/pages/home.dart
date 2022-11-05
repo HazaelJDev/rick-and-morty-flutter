@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:rick_and_morty/widgets/input_search.dart';
 import 'package:rick_and_morty/widgets/item_list.dart';
 import 'package:rick_and_morty/widgets/offline_status.dart';
+import '../blocs/character_api_bloc.dart';
 import '../utils/theme.dart';
 import '../blocs/theme_bloc.dart';
 import '../models/character_model.dart';
@@ -48,18 +49,21 @@ class Home extends StatelessWidget {
               child: InputSearch("Search for a character"),
             ),
             Expanded(
-              child: FutureBuilder<List<Character>>(
-                future: CharacterService.getCharacters(),
-                builder: (context, snapshot){
-                  if(!snapshot.hasData){
-                    return const Center(child: Text("Cargando los datos..."));
+              child: Builder(builder: (context){
+                  final dataAPI = Provider.of<CharacterApiBloc>(context);
+                  
+                  if(dataAPI.homeState == HomeState.loading){
+                    return const Center(child: Text("Loading the data..."));
+                  }
+                  
+                  if(dataAPI.homeState == HomeState.error){
+                    return Center(child: Text("An error has ocurred ${dataAPI.messageError}"));
                   }
 
-                  final List<Character> characters = snapshot.data!;
+                  final characters = dataAPI.characters;
                   
                   //print("Character: ${characters}");
                   
-
                   return ListView.builder(
                     padding: const EdgeInsets.only(
                       top: 0,

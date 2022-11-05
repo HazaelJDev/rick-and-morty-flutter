@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:rick_and_morty/blocs/character_api_bloc.dart';
 import './blocs/theme_bloc.dart';
 import './blocs/connectivity_bloc.dart';
 import './utils/theme.dart';
@@ -34,6 +35,10 @@ class MyApp extends StatelessWidget {
       ChangeNotifierProvider(
         create: (context) => ConnectivityBloc(),
         lazy: false, 
+      ),
+      ChangeNotifierProvider(
+        create: (context) => CharacterApiBloc(),
+        lazy: false,
       ),
     ], child: const MaterialAppWithTheme());
   }
