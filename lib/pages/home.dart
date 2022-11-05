@@ -7,7 +7,7 @@ import '../blocs/character_api_bloc.dart';
 import '../utils/theme.dart';
 import '../blocs/theme_bloc.dart';
 import '../models/character_model.dart';
-import '../services/character_service.dart';
+import '../repositories/character_service.dart';
 //import '../utils/fakeData.dart';
 
 class Home extends StatelessWidget {

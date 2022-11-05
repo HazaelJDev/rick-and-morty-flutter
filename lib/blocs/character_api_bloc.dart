@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../services/character_service.dart';
+import '../repositories/character_service.dart';
 import '../models/character_model.dart';
 
 enum HomeState{
