@@ -7,27 +7,30 @@ class SharedPreferencesBloc extends ChangeNotifier{
 
 
   SharedPreferencesBloc(){
-    SharedPreferencesDB();
-    sharedPreferencesDB = SharedPreferencesDB().readSharedPreferences();
+    //SharedPreferencesDB();
+    sharedPreferencesDB = SharedPreferencesDB.instance.readSharedPreferences();
   }
 
   addSharedPreferences(int id,bool isDark, String data) async{
+    print("id to add: $id");
+    print("isDark to add: $isDark");
+    print("Data to add: ${data.runtimeType}");
     final sp = SharedPreferences(id: id, isDark: isDark, data: data);
-    await SharedPreferencesDB().insertSharedPreferences(sp);
-    sharedPreferencesDB = SharedPreferencesDB().readSharedPreferences();
+    await SharedPreferencesDB.instance.insertSharedPreferences(sp);
+    sharedPreferencesDB = SharedPreferencesDB.instance.readSharedPreferences();
     notifyListeners();
   }
 
   updateSharedPreferencesDB(int id,bool isDark, String data) async{
     final sp = SharedPreferences(id: id, isDark: isDark, data: data);
-    await SharedPreferencesDB().updateSharedPreferences(sp);
-    sharedPreferencesDB = SharedPreferencesDB().readSharedPreferences();
+    await SharedPreferencesDB.instance.updateSharedPreferences(sp);
+    sharedPreferencesDB = SharedPreferencesDB.instance.readSharedPreferences();
     notifyListeners();
   }
 
   deleteSharedPreferencesDB(int id) async{
-    await SharedPreferencesDB().deleteSharedPreferences(id);
-    sharedPreferencesDB = SharedPreferencesDB().readSharedPreferences();
+    await SharedPreferencesDB.instance.deleteSharedPreferences(id);
+    sharedPreferencesDB = SharedPreferencesDB.instance.readSharedPreferences();
     notifyListeners();
   }
 

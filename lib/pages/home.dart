@@ -62,7 +62,7 @@ class Home extends StatelessWidget {
                   return Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      SpinKitChasingDots(
+                      SpinKitFadingCube(
                         color: themeScheme.primary,
                         size: 50.0,
                         duration: const Duration(milliseconds: 800),
@@ -84,9 +84,11 @@ class Home extends StatelessWidget {
 
                 //When the app can't fetch data from the API 
                 if (dataAPI.homeState == HomeState.error) {
-                  characters = json.decode(spDB.sharedPreferencesDB?.data);
+                  print("sharedPreferencesDB: ${spDB.sharedPreferencesDB.toString()}");
+                  
+                  characters = json.decode(spDB.sharedPreferencesDB[0]?.data);
                   //if not exist data in the database
-                  if (characters == null) {
+                  if (characters == []) {
                     return Column(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
@@ -157,8 +159,8 @@ class Home extends StatelessWidget {
   }
 
   changeTheme(ThemeBloc theme, BuildContext context) {
-    final dataAPI = Provider.of<CharacterApiBloc>(context);
-    final spDB = Provider.of<SharedPreferencesBloc>(context);
+    final dataAPI = Provider.of<CharacterApiBloc>(context,listen: false);
+    final spDB = Provider.of<SharedPreferencesBloc>(context,listen: false);
     if (theme.getIsDark()) {
       theme.setTheme(darkTheme);
       spDB.sharedPreferencesDB == null ?
