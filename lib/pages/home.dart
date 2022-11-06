@@ -1,13 +1,16 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:rick_and_morty/blocs/shared_preferences_bloc.dart';
 import 'package:rick_and_morty/widgets/input_search.dart';
 import 'package:rick_and_morty/widgets/item_list.dart';
 import 'package:rick_and_morty/widgets/offline_status.dart';
 import '../blocs/character_api_bloc.dart';
 import '../utils/theme.dart';
 import '../blocs/theme_bloc.dart';
-import '../models/character_model.dart';
-import '../repositories/character_service.dart';
+//import 'package:rick_and_morty/repositories/character_db.dart';
+//import '../blocs/connectivity_bloc.dart';
 //import '../utils/fakeData.dart';
 
 class Home extends StatelessWidget {
@@ -28,7 +31,7 @@ class Home extends StatelessWidget {
           title: const Text('Rick and Morty App'),
           actions: [
             IconButton(
-              onPressed: () => changeTheme(theme),
+              onPressed: () => changeTheme(theme,context),
               icon:
                   Icon(theme.getIsDark() ? Icons.light_mode : Icons.dark_mode),
               tooltip: "Change theme",
@@ -49,33 +52,71 @@ class Home extends StatelessWidget {
               child: InputSearch("Search for a character"),
             ),
             Expanded(
-              child: Builder(builder: (context){
-                  final dataAPI = Provider.of<CharacterApiBloc>(context);
-                  
-                  if(dataAPI.homeState == HomeState.loading){
-                    return const Center(child: Text("Loading the data..."));
-                  }
-                  
-                  if(dataAPI.homeState == HomeState.error){
-                    return Center(child: Text("An error has ocurred ${dataAPI.messageError}"));
-                  }
+              child: Builder(builder: (context) {
+                final dataAPI = Provider.of<CharacterApiBloc>(context);
+                final spDB = Provider.of<SharedPreferencesBloc>(context);
+                dynamic characters = [];
 
-                  final characters = dataAPI.characters;
-                  
-                  //print("Character: ${characters}");
-                  
-                  return ListView.builder(
-                    padding: const EdgeInsets.only(
-                      top: 0,
-                      right: 16,
-                      bottom: 32,
-                      left: 16,
-                    ),
-                    itemCount: characters.length,
-                    itemBuilder: (context, index) => Item(characters[index]),
+                //When the app is loading data from the API
+                if (dataAPI.homeState == HomeState.loading) {
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      SpinKitChasingDots(
+                        color: themeScheme.primary,
+                        size: 50.0,
+                        duration: const Duration(milliseconds: 800),
+                      ),
+                      const SizedBox(
+                        height: 28,
+                      ),
+                      Text("Loading the data...", style: Theme.of(context).textTheme.labelLarge?.copyWith(color: themeScheme.primary),),
+                    ],
                   );
                 }
-              ),
+
+                //When the app loaded data successfully from the API
+                if (dataAPI.homeState == HomeState.loaded) {
+                  characters = dataAPI.characters;
+                  //save the data in the database
+                  spDB.addSharedPreferences(1,theme.getIsDark(), json.encode(characters));
+                }
+
+                //When the app can't fetch data from the API 
+                if (dataAPI.homeState == HomeState.error) {
+                  characters = json.decode(spDB.sharedPreferencesDB?.data);
+                  //if not exist data in the database
+                  if (characters == null) {
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        const Icon(
+                          Icons.error_outline,
+                          color: Colors.red,
+                          size: 60,
+                        ),
+                        const SizedBox(
+                          height: 28,
+                        ),
+                        Text("We can't loaded the data dude :(", style: Theme.of(context).textTheme.titleLarge?.copyWith(color: themeScheme.error),),
+                      ],
+                    );
+                  }
+                }
+
+                //print("Character: ${characters}");
+
+                return ListView.builder(
+                  padding: const EdgeInsets.only(
+                    top: 0,
+                    right: 16,
+                    bottom: 32,
+                    left: 16,
+                  ),
+                  itemCount: characters.length,
+                  itemBuilder: (context, index) => Item(characters[index]),
+                );
+              }),
             ),
           ],
         ));
@@ -115,11 +156,19 @@ class Home extends StatelessWidget {
     );
   }
 
-  changeTheme(ThemeBloc theme) {
+  changeTheme(ThemeBloc theme, BuildContext context) {
+    final dataAPI = Provider.of<CharacterApiBloc>(context);
+    final spDB = Provider.of<SharedPreferencesBloc>(context);
     if (theme.getIsDark()) {
       theme.setTheme(darkTheme);
+      spDB.sharedPreferencesDB == null ?
+      spDB.addSharedPreferences(1,true, json.encode(dataAPI.characters))
+      :spDB.updateSharedPreferencesDB(1,true, json.encode(dataAPI.characters));
     } else {
       theme.setTheme(lightTheme);
+      spDB.sharedPreferencesDB == null ?
+      spDB.addSharedPreferences(1,false, json.encode(dataAPI.characters))
+      :spDB.updateSharedPreferencesDB(1,false, json.encode(dataAPI.characters));
     }
   }
 }

@@ -6,6 +6,7 @@ import './blocs/theme_bloc.dart';
 import './blocs/connectivity_bloc.dart';
 import './utils/theme.dart';
 import './pages/splash_screen.dart';
+import 'blocs/shared_preferences_bloc.dart';
 
 //Objeto Global con la funcionalidad de checar el status de la conexión a internet
 final internetChecker = CheckInternetConnection();
@@ -38,6 +39,10 @@ class MyApp extends StatelessWidget {
       ),
       ChangeNotifierProvider(
         create: (context) => CharacterApiBloc(),
+        lazy: false,
+      ),
+      ChangeNotifierProvider(
+        create: (context) => SharedPreferencesBloc(),
         lazy: false,
       ),
     ], child: const MaterialAppWithTheme());
