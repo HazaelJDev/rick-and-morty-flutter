@@ -4,33 +4,36 @@ import '../repositories/character_db.dart';
 
 class SharedPreferencesBloc extends ChangeNotifier{
   dynamic sharedPreferencesDB = [];
+  //dynamic _aux = [];
 
-
-  SharedPreferencesBloc(){
+  SharedPreferencesBloc() {
     //SharedPreferencesDB();
-    sharedPreferencesDB = SharedPreferencesDB.instance.readSharedPreferences();
+    SharedPreferencesDB.instance.readSharedPreferences().then((value) => sharedPreferencesDB = value);
   }
 
   addSharedPreferences(int id,bool isDark, String data) async{
-    print("id to add: $id");
-    print("isDark to add: $isDark");
-    print("Data to add: ${data.runtimeType}");
     final sp = SharedPreferences(id: id, isDark: isDark, data: data);
     await SharedPreferencesDB.instance.insertSharedPreferences(sp);
-    sharedPreferencesDB = SharedPreferencesDB.instance.readSharedPreferences();
+    /*_aux = SharedPreferencesDB.instance.readSharedPreferences();
+    sharedPreferencesDB = _aux;*/
+    SharedPreferencesDB.instance.readSharedPreferences().then((value) => sharedPreferencesDB = value);
     notifyListeners();
   }
 
   updateSharedPreferencesDB(int id,bool isDark, String data) async{
     final sp = SharedPreferences(id: id, isDark: isDark, data: data);
     await SharedPreferencesDB.instance.updateSharedPreferences(sp);
-    sharedPreferencesDB = SharedPreferencesDB.instance.readSharedPreferences();
+    /*_aux = SharedPreferencesDB.instance.readSharedPreferences();
+    sharedPreferencesDB = _aux;*/
+    SharedPreferencesDB.instance.readSharedPreferences().then((value) => sharedPreferencesDB = value);
     notifyListeners();
   }
 
   deleteSharedPreferencesDB(int id) async{
     await SharedPreferencesDB.instance.deleteSharedPreferences(id);
-    sharedPreferencesDB = SharedPreferencesDB.instance.readSharedPreferences();
+    /*_aux = SharedPreferencesDB.instance.readSharedPreferences();
+    sharedPreferencesDB = _aux;*/
+    SharedPreferencesDB.instance.readSharedPreferences().then((value) => sharedPreferencesDB = value);
     notifyListeners();
   }
 

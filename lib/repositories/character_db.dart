@@ -64,6 +64,7 @@ class SharedPreferencesDB {
       sp.toJson(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
+    
   }
 
   //Create all the Records
@@ -71,13 +72,13 @@ class SharedPreferencesDB {
     final db = await instance.database;
     try {
       List<Map<String, dynamic>> maps = await db.query('spreferences');
-      if (maps.isEmpty) {
+      if (maps.isNotEmpty) {
         return List.generate(maps.length, (i) {
           //return SharedPreferences.fromJson(maps[i]);
           return SharedPreferences(
             id: maps[i]['id'],
             data: maps[i]['data'],
-            isDark: maps[i]['isDark'],
+            isDark: maps[i]['isDark'] == 0 ? true : false,
           );
         });
       }

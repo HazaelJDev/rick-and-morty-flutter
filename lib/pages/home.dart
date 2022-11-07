@@ -7,6 +7,7 @@ import 'package:rick_and_morty/widgets/input_search.dart';
 import 'package:rick_and_morty/widgets/item_list.dart';
 import 'package:rick_and_morty/widgets/offline_status.dart';
 import '../blocs/character_api_bloc.dart';
+import '../models/character_model.dart';
 import '../utils/theme.dart';
 import '../blocs/theme_bloc.dart';
 //import 'package:rick_and_morty/repositories/character_db.dart';
@@ -52,7 +53,8 @@ class Home extends StatelessWidget {
               child: InputSearch("Search for a character"),
             ),
             Expanded(
-              child: Builder(builder: (context) {
+              child: Builder(
+                builder: (context) {
                 final dataAPI = Provider.of<CharacterApiBloc>(context);
                 final spDB = Provider.of<SharedPreferencesBloc>(context);
                 dynamic characters = [];
@@ -84,23 +86,33 @@ class Home extends StatelessWidget {
 
                 //When the app can't fetch data from the API 
                 if (dataAPI.homeState == HomeState.error) {
-                  print("sharedPreferencesDB: ${spDB.sharedPreferencesDB.toString()}");
                   
-                  characters = json.decode(spDB.sharedPreferencesDB[0]?.data);
+                  print("sharedPreferencesDB: ${spDB.sharedPreferencesDB[0]}");
+                  //theme.setIsDark(spDB.sharedPreferencesDB[0].isDark);
+                  characters = json.decode(spDB.sharedPreferencesDB[0].data);
+                  
+                  for (var i = 0; i < characters.length; i++) {
+                    characters[i] = Character.fromJson(characters[i]);
+                  }
+
+
+                  //characters = json.decode(aux[0].data);
                   //if not exist data in the database
-                  if (characters == []) {
+                  if (characters.isEmpty) {
                     return Column(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        const Icon(
+                        Icon(
                           Icons.error_outline,
-                          color: Colors.red,
-                          size: 60,
+                          color: Theme.of(context).colorScheme.error,
+                          size: 120,
                         ),
                         const SizedBox(
-                          height: 28,
+                          height: 8,
+                          width: double.infinity,
                         ),
-                        Text("We can't loaded the data dude :(", style: Theme.of(context).textTheme.titleLarge?.copyWith(color: themeScheme.error),),
+                        Text("We can't loaded the data dude :(", style: Theme.of(context).textTheme.titleLarge?.copyWith(color: themeScheme.error,),),
                       ],
                     );
                   }
