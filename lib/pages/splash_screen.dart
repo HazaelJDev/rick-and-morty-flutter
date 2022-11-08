@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:provider/provider.dart';
+import '../blocs/shared_preferences_bloc.dart';
+import '../blocs/theme_bloc.dart';
+import '../utils/theme.dart';
 import './home.dart';
 
 
@@ -16,6 +20,21 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     
+    //Set Theme from Shared Preferences
+    final spDB = Provider.of<SharedPreferencesBloc>(context,listen: false);
+    final theme = Provider.of<ThemeBloc>(context,listen: false);
+    dynamic themeD;
+    
+
+    if(spDB.sharedPreferencesDB.isNotEmpty){
+      print("${spDB.sharedPreferencesDB[0].isDark}");
+
+      themeD = spDB.sharedPreferencesDB[0].isDark ? darkTheme : lightTheme;
+      theme.setTheme(themeD);
+      theme.setIsDark(spDB.sharedPreferencesDB[0].isDark);
+    }
+    
+    //Wait 4 seconds and then navigate to Home Page
     Future.delayed(
         const Duration(seconds: 4),
         () => Navigator.pushReplacement(

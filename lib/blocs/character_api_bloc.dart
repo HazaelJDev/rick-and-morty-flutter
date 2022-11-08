@@ -15,13 +15,13 @@ class CharacterApiBloc extends ChangeNotifier{
   String messageError = "";
 
   CharacterApiBloc(){
-    _fetchCharacters();
+    fetchCharacters();
   }
 
 
   HomeState get homeState => _homeState;
 
-  Future<void> _fetchCharacters() async{
+  Future<void> fetchCharacters() async{
     _homeState = HomeState.loading;
     try{
       final charactersapi = await CharacterService.getCharacters();    

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../blocs/character_api_bloc.dart';
 import '../blocs/connectivity_bloc.dart';
 
 
@@ -10,6 +11,13 @@ class OfflineBottomBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final network = Provider.of<ConnectivityBloc>(context);
+    final dataAPI = Provider.of<CharacterApiBloc>(context);
+    if(network.status == NetworkStatus.online){
+      print("volvimos dude");
+      if(dataAPI.characters.isEmpty){
+        dataAPI.fetchCharacters();
+      }
+    }
     return Visibility(
       visible: network.status == NetworkStatus.offline,
       child: Container(

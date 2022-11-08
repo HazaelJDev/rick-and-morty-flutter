@@ -7,6 +7,7 @@ import 'package:rick_and_morty/widgets/input_search.dart';
 import 'package:rick_and_morty/widgets/item_list.dart';
 import 'package:rick_and_morty/widgets/offline_status.dart';
 import '../blocs/character_api_bloc.dart';
+import '../blocs/connectivity_bloc.dart';
 import '../models/character_model.dart';
 import '../utils/theme.dart';
 import '../blocs/theme_bloc.dart';
@@ -20,7 +21,7 @@ class Home extends StatelessWidget {
     final theme = Provider.of<ThemeBloc>(context);
     //Check internet Conncetiovty
     //final status = Provider.of<ConnectivityBloc>(context);
-
+    
     final themeScheme = Theme.of(context).colorScheme;
     return Scaffold(
         appBar: AppBar(
@@ -57,6 +58,7 @@ class Home extends StatelessWidget {
                 builder: (context) {
                 final dataAPI = Provider.of<CharacterApiBloc>(context);
                 final spDB = Provider.of<SharedPreferencesBloc>(context);
+                final network = Provider.of<ConnectivityBloc>(context);
                 dynamic characters = [];
 
                 //When the app is loading data from the API
@@ -81,22 +83,26 @@ class Home extends StatelessWidget {
                 if (dataAPI.homeState == HomeState.loaded) {
                   characters = dataAPI.characters;
                   //save the data in the database
-                  spDB.addSharedPreferences(1,theme.getIsDark(), json.encode(characters));
+                  if(json.encode(dataAPI.characters) != spDB.sharedPreferencesDB[0].data){
+                    print("guardando en la base de datos");
+                    spDB.addSharedPreferences(1,theme.getIsDark(), json.encode(characters));
+                  }
+                    
                 }
 
                 //When the app can't fetch data from the API 
                 if (dataAPI.homeState == HomeState.error) {
                   
-                  print("sharedPreferencesDB: ${spDB.sharedPreferencesDB[0]}");
-                  //theme.setIsDark(spDB.sharedPreferencesDB[0].isDark);
-                  characters = json.decode(spDB.sharedPreferencesDB[0].data);
-                  
-                  for (var i = 0; i < characters.length; i++) {
-                    characters[i] = Character.fromJson(characters[i]);
+                  if(spDB.sharedPreferencesDB.isNotEmpty){
+                    print("sharedPreferencesDB: ${spDB.sharedPreferencesDB[0]}");
+                    
+                    characters = json.decode(spDB.sharedPreferencesDB[0].data);
+                    
+                    for (var i = 0; i < characters.length; i++) {
+                      characters[i] = Character.fromJson(characters[i]);
+                    }
                   }
 
-
-                  //characters = json.decode(aux[0].data);
                   //if not exist data in the database
                   if (characters.isEmpty) {
                     return Column(
@@ -173,16 +179,24 @@ class Home extends StatelessWidget {
   changeTheme(ThemeBloc theme, BuildContext context) {
     final dataAPI = Provider.of<CharacterApiBloc>(context,listen: false);
     final spDB = Provider.of<SharedPreferencesBloc>(context,listen: false);
+    dynamic dataToSave = [];
+    //check the data to save in the database
+    if(dataAPI.characters.isEmpty){
+      dataToSave = spDB.sharedPreferencesDB.isEmpty ? "[]" : spDB.sharedPreferencesDB[0].data;
+    }else{
+      dataToSave = json.encode(dataAPI.characters) ;
+    }
+
     if (theme.getIsDark()) {
       theme.setTheme(darkTheme);
-      spDB.sharedPreferencesDB == null ?
-      spDB.addSharedPreferences(1,true, json.encode(dataAPI.characters))
-      :spDB.updateSharedPreferencesDB(1,true, json.encode(dataAPI.characters));
+      spDB.sharedPreferencesDB.isEmpty ?
+      spDB.addSharedPreferences(1,true, dataToSave)
+      :spDB.updateSharedPreferencesDB(1,true, dataToSave);
     } else {
       theme.setTheme(lightTheme);
-      spDB.sharedPreferencesDB == null ?
-      spDB.addSharedPreferences(1,false, json.encode(dataAPI.characters))
-      :spDB.updateSharedPreferencesDB(1,false, json.encode(dataAPI.characters));
+      spDB.sharedPreferencesDB.isEmpty ?
+      spDB.addSharedPreferences(1,false, dataToSave)
+      :spDB.updateSharedPreferencesDB(1,false, dataToSave);
     }
   }
 }
