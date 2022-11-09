@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:rick_and_morty/blocs/character_api_bloc.dart';
+import 'package:rick_and_morty/blocs/input_search_bloc.dart';
 import './blocs/theme_bloc.dart';
 import './blocs/connectivity_bloc.dart';
+import 'blocs/shared_preferences_bloc.dart';
 import './utils/theme.dart';
 import './pages/splash_screen.dart';
-import 'blocs/shared_preferences_bloc.dart';
 
 //Objeto Global con la funcionalidad de checar el status de la conexión a internet
 final internetChecker = CheckInternetConnection();
@@ -43,6 +44,10 @@ class MyApp extends StatelessWidget {
       ),
       ChangeNotifierProvider(
         create: (context) => SharedPreferencesBloc(),
+        lazy: false,
+      ),
+      ChangeNotifierProvider(
+        create: (context) => InputSearchBloc(),
         lazy: false,
       ),
     ], child: const MaterialAppWithTheme());

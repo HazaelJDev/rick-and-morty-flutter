@@ -12,7 +12,11 @@ class ThemeBloc with ChangeNotifier{
   }
 
   bool getIsDark() => _isDark;
-  bool setIsDark(bool isDark) => _isDark = isDark;
+  
+  void setIsDark(bool isDark){ 
+    _isDark = isDark;
+    notifyListeners(); 
+  }
 
   ThemeData getTheme() => _themeData;
 

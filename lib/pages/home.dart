@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:rick_and_morty/blocs/input_search_bloc.dart';
 import 'package:rick_and_morty/blocs/shared_preferences_bloc.dart';
 import 'package:rick_and_morty/widgets/input_search.dart';
 import 'package:rick_and_morty/widgets/item_list.dart';
@@ -11,16 +12,14 @@ import '../blocs/connectivity_bloc.dart';
 import '../models/character_model.dart';
 import '../utils/theme.dart';
 import '../blocs/theme_bloc.dart';
-//import 'package:rick_and_morty/repositories/character_db.dart';
-//import '../blocs/connectivity_bloc.dart';
-//import '../utils/fakeData.dart';
 
 class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Provider.of<ThemeBloc>(context);
-    //Check internet Conncetiovty
-    //final status = Provider.of<ConnectivityBloc>(context);
+    final input = Provider.of<InputSearchBloc>(context);
+    //dynamic characters = [];
+    //dynamic searchedCharacters = [];
     
     final themeScheme = Theme.of(context).colorScheme;
     return Scaffold(
@@ -58,9 +57,8 @@ class Home extends StatelessWidget {
                 builder: (context) {
                 final dataAPI = Provider.of<CharacterApiBloc>(context);
                 final spDB = Provider.of<SharedPreferencesBloc>(context);
-                final network = Provider.of<ConnectivityBloc>(context);
-                dynamic characters = [];
-
+                //final network = Provider.of<ConnectivityBloc>(context);
+                
                 //When the app is loading data from the API
                 if (dataAPI.homeState == HomeState.loading) {
                   return Column(
@@ -81,30 +79,30 @@ class Home extends StatelessWidget {
 
                 //When the app loaded data successfully from the API
                 if (dataAPI.homeState == HomeState.loaded) {
-                  characters = dataAPI.characters;
+                  input.characters = dataAPI.characters;
                   //save the data in the database
                   if(json.encode(dataAPI.characters) != spDB.sharedPreferencesDB[0].data){
                     print("guardando en la base de datos");
-                    spDB.addSharedPreferences(1,theme.getIsDark(), json.encode(characters));
+                    spDB.addSharedPreferences(1,theme.getIsDark(), json.encode(input.characters));
                   }
                     
                 }
 
-                //When the app can't fetch data from the API 
+                //When the app can't fetch data from the API
                 if (dataAPI.homeState == HomeState.error) {
                   
                   if(spDB.sharedPreferencesDB.isNotEmpty){
                     print("sharedPreferencesDB: ${spDB.sharedPreferencesDB[0]}");
                     
-                    characters = json.decode(spDB.sharedPreferencesDB[0].data);
+                    input.characters = json.decode(spDB.sharedPreferencesDB[0].data);
                     
-                    for (var i = 0; i < characters.length; i++) {
-                      characters[i] = Character.fromJson(characters[i]);
+                    for (var i = 0; i < input.characters.length; i++) {
+                      input.characters[i] = Character.fromJson(input.characters[i]);
                     }
                   }
 
                   //if not exist data in the database
-                  if (characters.isEmpty) {
+                  if (input.characters.isEmpty) {
                     return Column(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -123,19 +121,52 @@ class Home extends StatelessWidget {
                     );
                   }
                 }
+                
+                if(input.messageError != ""){
+                  return Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.error_outline,
+                          color: Theme.of(context).colorScheme.error,
+                          size: 120,
+                        ),
+                        const SizedBox(
+                          height: 8,
+                          width: double.infinity,
+                        ),
+                        Text("We don't have this information :(", style: Theme.of(context).textTheme.titleLarge?.copyWith(color: themeScheme.error,),),
+                      ],
+                    );
+                }
 
-                //print("Character: ${characters}");
-
-                return ListView.builder(
-                  padding: const EdgeInsets.only(
-                    top: 0,
-                    right: 16,
-                    bottom: 32,
-                    left: 16,
-                  ),
-                  itemCount: characters.length,
-                  itemBuilder: (context, index) => Item(characters[index]),
-                );
+                if(input.searchedCharacters.isEmpty){
+                  //List all the characters
+                  return ListView.builder(
+                    padding: const EdgeInsets.only(
+                      top: 0,
+                      right: 16,
+                      bottom: 32,
+                      left: 16,
+                    ),
+                    itemCount: input.characters.length,
+                    itemBuilder: (context, index) => Item(input.characters[index]),
+                  );
+                }else{
+                  //List the searched characters
+                  return ListView.builder(
+                    padding: const EdgeInsets.only(
+                      top: 0,
+                      right: 16,
+                      bottom: 32,
+                      left: 16,
+                    ),
+                    itemCount: input.searchedCharacters.length,
+                    itemBuilder: (context, index) => Item(input.searchedCharacters[index]),
+                  );
+                }
+                
               }),
             ),
           ],
